@@ -1,6 +1,7 @@
 from curling import beacon
 import socket
 import sys
+from datetime import datetime
 
 HOST = ''
 PORT = ''
@@ -20,12 +21,14 @@ print("connected")
 while True:
     try:
         msg = client_socket.recv(BUFSIZE)
-        file_title = ""
         some_state = True
         if some_state:
+            file_title = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+
             tr = beacon.start_collection()
-            beacon.save_data(file_title, tr)
+            beacon.save_data(tr, file_title)
             beacon.draw_trajectory(tr)
+
     except KeyboardInterrupt:
         client_socket.close()
         break
