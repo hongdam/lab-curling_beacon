@@ -6,7 +6,7 @@ import csv
 from datetime import datetime
 
 
-def start_collection():
+def start_collection(save=False):
     trajectory = []
     hedge = MarvelmindHedge(tty="COM3", adr=10, debug=False, maxvaluescount=16)
     hedge.start()
@@ -16,17 +16,23 @@ def start_collection():
             # print (hedge.position()) # get last position and print
 
             p = hedge.position()[1:]
-            if p[1] > -9.5:
+            #print(p[0])
+            if p[1] > -4.3:
                 trajectory.append(p)
 
-            if len(trajectory) > 40 and dist(trajectory[-10][1:3], trajectory[-1][1:3]) < 0.05:
+            if len(trajectory) > 40 and dist(trajectory[-15][1:3], trajectory[-1][1:3]) < 0.05:
                 hedge.stop()
                 break
 
         except KeyboardInterrupt:
             hedge.stop()  # stop and close serial port
             break
-    return data_processing(trajectory)
+
+    trajectory = data_processing(trajectory)
+    if save:
+        save_data(trajectory)
+
+    return trajectory
 
 
 def data_processing(data):
@@ -64,15 +70,21 @@ def dist(a, b):
     return dist_a_b
 
 
-def draw_trajectory(s_data):
+def draw_trajectory(s_data, save=False, f_name=None):
 
     s_data = np.array(s_data)
-    x = s_data[:, 1]
-    y = s_data[:, 2]
+    x = s_data[:, 0]
+    y = s_data[:, 1]
 
     plt.axis('equal')
-    plt.scatter(y, x, s=2)
-    plt.show()
+    plt.scatter(x, y, s=2)
+    if save:
+        if f_name == None:
+            f_name = datetime.now().strftime('%m-%d_%H_%M_%S')
+        plt.savefig(f_name)
+        plt.clf()
+    else:
+        plt.show()
 
 
 def save_data(data, f_name=None):
@@ -82,3 +94,11 @@ def save_data(data, f_name=None):
     with open(f_name, 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter='\n')
         writer.writerow(['\t'.join([str(j) for j in i]) for i in data])
+
+
+def load_data(f_name):
+
+    with open(f_name, 'r') as file:
+        data = [[float(d) for d in line.split()] for line in file if len(line) > 1]
+
+    return data
