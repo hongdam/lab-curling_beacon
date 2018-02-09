@@ -76,15 +76,17 @@ def draw_trajectory(s_data, save=False, f_name=None):
     x = s_data[:, 0]
     y = s_data[:, 1]
 
+    fig = plt.figure(figsize=(2.0, 9.0))
     plt.axis('equal')
-    plt.scatter(x, y, s=2)
+    plt.axes([0, 5, -5, 40])
+    plt.scatter(x, y, s=1)
     if save:
         if f_name == None:
             f_name = datetime.now().strftime('%m-%d_%H_%M_%S')
-        plt.savefig(f_name)
+        fig.savefig(f_name)
         plt.clf()
     else:
-        plt.show()
+        fig.show()
 
 
 def save_data(data, f_name=None):

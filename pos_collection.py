@@ -42,7 +42,7 @@ def wait_recv_return_title(title_flag=False):
                     title = p[1:-2]
                     title = title.decode('utf-8')
                     title_flag = True
-                elif title_flag and p[0] == 4:
+                elif title_flag and p[0] == 12:
                     print("recv start")
                     start_flag = True
 
@@ -70,7 +70,7 @@ while True:
             tr = beacon.start_collection()
             print("finish collection")
             beacon.save_data(tr, './data/'+title)
-            beacon.draw_trajectory(tr, True, './data/'+title)
+            beacon.draw_trajectory(tr, True, './data/visualization'+title)
         else:
             client_socket.close()
             break
